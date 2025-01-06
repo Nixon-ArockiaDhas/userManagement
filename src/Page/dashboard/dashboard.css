@@ -1,0 +1,54 @@
+.dashboardbg{
+    padding: 0;
+}
+.table{
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px ;
+    padding: 2rem;
+    margin-top: 3rem;
+}
+h1{
+    margin: 0;
+}
+.headingDiv{
+    display: flex;
+    justify-content: space-between;
+}
+.filter{
+    display: flex;
+    column-gap: 1rem;
+}
+.toggleButtons{
+    display: flex;
+}
+.toggleIconContainer {
+    display: flex;
+    padding: 0.3rem;
+    align-items: center; 
+    gap: 0.5rem; 
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease; 
+    border: 1px solid black;
+}
+.toggleIcon {
+    font-size: 2rem; 
+}
+.toggleIconContainer.selected {
+    font-weight: bold; 
+    color: #166CC7; 
+    border: 1px solid #166CC7;
+}
+.listIcon{
+    border-top-left-radius: 0.5rem; 
+    border-bottom-left-radius: 0.5rem; 
+}
+
+.cardIcon{
+    border-top-right-radius: 0.5rem; 
+    border-bottom-right-radius: 0.5rem; 
+}
+.indicator{
+    margin-top: 2rem;
+    text-align: center;
+}

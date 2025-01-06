@@ -1,0 +1,25 @@
+.navbar{
+    background-color: #001628 !important;
+}
+.navText{
+    font-size: 1rem;
+}
+.logOut{
+    background-color: #e74c3c;
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    margin-left: 2rem;
+}
+.centeredContent {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: start;      
+    flex-grow: 1;             
+}
+
+.logo{
+    background-color: #fff;
+    padding: 0.5rem 0.75rem;
+    height:1.5rem;
+    border-radius: 0.3rem;
+}

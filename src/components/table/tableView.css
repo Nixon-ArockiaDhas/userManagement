@@ -1,0 +1,21 @@
+.email{
+    color: #166CC7 !important;
+}
+.tableHeader{
+    font-weight: 600 !important;
+}
+.editButton{
+    background-color: #166CC7 !important;
+    color: #fff;
+    font-weight: 550;
+}
+.deleteButton{
+    background-color: #e74c3c !important;
+    color: #fff;
+    font-weight: 550;
+    margin-left: 1rem !important;
+}
+.tableDiv{
+    box-shadow: none !important;
+    margin-top: 2rem !important;
+}
