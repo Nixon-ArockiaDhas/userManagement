@@ -1,4 +1,5 @@
-User Management Dashboard
+# User Management Dashboard
+
 A React-based user management dashboard that allows creating, editing, deleting, and viewing users. The app fetches data from the  API and supports search, pagination, and toggling between table and card views. It includes modal-based user creation and editing, and displays success/error messages via a snackbar.
 
 Features:
