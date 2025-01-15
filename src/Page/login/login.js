@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import FormTextField from "../../components/textfield/textfield";
 import Container from '@mui/material/Container';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -8,39 +8,35 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button'
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { showSnackbar } from "../../slices/snackbarSlice";
+import { loginUser } from "../../slices/authSlice";
+import { CircularProgress } from "@mui/material";
 
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [credentials, setCredentials] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    fetch("/credentials.json")
-      .then((response) => response.json())
-      .then((data) => setCredentials(data))
-      .catch((error) => console.error("Error loading credentials:", error));
-  })
-
-  const handleLogin = () => {
-    const isValidUser = credentials.some(
-      (user) => user.email === email && user.password === password
-    );
-
-    if (isValidUser) {
-      navigate("/dashboard");
-    } else {
-      dispatch(
-        showSnackbar({
-          message: "Invalid email or password. Please try again.",
-          severity: "error",
-        })
-      )
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      dispatch(showSnackbar({ message: 'Email & Password Required', severity: 'warning' }));
+      return;
+    }
+    try {
+      const result = await dispatch(loginUser({ email, password })).unwrap();
+      if (result?.token) {
+        dispatch(showSnackbar({ message: 'Login Successful', severity: 'success' }));
+        navigate('/dashboard');
+      } else {
+        dispatch(showSnackbar({ message: 'Incorrect Credentials', severity: 'error' }));
+      }
+    } catch (error) {
+      console.log(error)
     }
   };
 
@@ -69,8 +65,8 @@ export default function LoginPage() {
             startIcon={<LockIcon />}
           />
           <FormControlLabel control={<Checkbox defaultChecked />} label="Remember Me" />
-          <Button variant="contained" fullWidth className="buttonFullWidth" onClick={handleLogin}>
-            Login
+          <Button variant="contained" fullWidth className="buttonFullWidth" disabled={loading} onClick={handleLogin}>
+            {loading ? <CircularProgress /> : 'Login'}
           </Button>
         </Container>
       </Container>

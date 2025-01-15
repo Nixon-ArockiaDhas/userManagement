@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from "../../slices/userSlice";
+import { deleteUser, fetchUser } from "../../slices/userSlice";
 import Container from '@mui/material/Container'
 import { Button } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -11,15 +11,14 @@ import NavBar from "../../components/navbar/navbar";
 import FormTextField from "../../components/textfield/textfield";
 import SearchIcon from '@mui/icons-material/Search';
 import UserModal from "../../components/modal/userModal";
-import axios from 'axios';
 import { showSnackbar } from "../../slices/snackbarSlice";
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
-
+import { createUser, updateUser } from "../../slices/userSlice";
 
 export default function Dashboard() {
     const dispatch = useDispatch();
-    const { users, loading, error, setUsers } = useSelector((state) => state.users);
+    const { users, loading, error } = useSelector((state) => state.users);
     const [localUsers, setLocalUsers] = useState([]);
     const [cardView, setCardView] = useState(false);
     const [searchText, setSearchText] = useState('');
@@ -56,23 +55,27 @@ export default function Dashboard() {
     };
     const handleDeleteUser = async (userId) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
-            await axios.delete(`https://reqres.in/api/users/${userId}`);
-            setLocalUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+            dispatch(deleteUser(userId))
             dispatch(
                 showSnackbar({
                     message: "User Deleted Succesfully",
-                    severity: "error"
+                    severity: "success"
                 })
             )
         }
     };
 
     const handleUserUpdate = (updatedUser) => {
-        setLocalUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user.id === updatedUser.id ? { ...user, ...updatedUser } : user
-            )
+        dispatch(
+            updateUser({
+                id: updatedUser.id,
+                user: updatedUser,
+            })
         );
+    };
+
+    const handleUserCreate = (newUser) => {
+        dispatch(createUser(newUser));
     };
 
     return (
@@ -130,7 +133,7 @@ export default function Dashboard() {
                                 userToEdit={selectedUser}
                                 isEditMode={isEditMode}
                                 onUserUpdate={handleUserUpdate}
-                                onUserCreate={(newUser) => setLocalUsers((prevUsers) => [newUser, ...prevUsers])}
+                                onUserCreate={handleUserCreate}
                             />
                         </>
                     )}

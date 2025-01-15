@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
 import FormTextField from "../textfield/textfield";
 import './userModal.css'
 import { showSnackbar } from "../../slices/snackbarSlice";
+import { createUser, updateUser } from "../../slices/userSlice";
 
 const style = {
     position: 'absolute',
@@ -21,35 +21,29 @@ const style = {
     borderRadius: '8px',
 }
 
-const UserModal = ({ open, handleClose, userToEdit, isEditMode, onUserUpdate, onUserCreate }) => {
+const UserModal = ({ open, handleClose, userToEdit, isEditMode }) => {
 
-    const dispatch = useDispatch();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [avatarUrl, setAvatarUrl] = useState('');
     const [formValid, setFormValid] = useState(false);
+    const dispatch = useDispatch();
 
-    useEffect(() => {
-        setFirstName('');
-        setLastName('');
-        setEmail('');
-        setAvatarUrl('');
-    }, [open])
 
     useEffect(() => {
         if (isEditMode && userToEdit) {
-            setFirstName(userToEdit.first_name);
-            setLastName(userToEdit.last_name);
-            setEmail(userToEdit.email);
-            setAvatarUrl(userToEdit.avatar);
+            setFirstName(userToEdit.first_name || '');
+            setLastName(userToEdit.last_name || '');
+            setEmail(userToEdit.email || '');
+            setAvatarUrl(userToEdit.avatar || '');
         } else {
             setFirstName('');
             setLastName('');
             setEmail('');
             setAvatarUrl('');
         }
-    }, [isEditMode, userToEdit])
+    }, [open, isEditMode, userToEdit]);
 
     useEffect(() => {
         const isValid =
@@ -62,32 +56,27 @@ const UserModal = ({ open, handleClose, userToEdit, isEditMode, onUserUpdate, on
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const user = { first_name: firstName, last_name: lastName, email, avatarUrl };
+        const user = { first_name: firstName, last_name: lastName, email, avatar: avatarUrl };
         try {
-            if (isEditMode) {
-                const a = await axios.put(`https://reqres.in/api/users/${userToEdit.id}`, user);
-                onUserUpdate({ ...userToEdit, ...a.data })
-                dispatch(
-                    showSnackbar({
-                        message: "User Updated Successfully",
-                        severity: "success"
-                    })
-                )
-            } else {
-                const a = await axios.post('https://reqres.in/api/users', user);
-                onUserCreate({ ...user, id: a.data.id });
-                dispatch(
-                    showSnackbar({
-                        message: "User Created Successfully",
-                        severity: "success"
-                    })
-                )
-            }
-            handleClose();
+            const action = isEditMode ? updateUser({ id: userToEdit.id, user }) : createUser(user);
+            const response = await dispatch(action).unwrap();
+
+            dispatch(
+                showSnackbar({
+                    message: response?.id
+                        ? `${isEditMode ? 'User Updated' : 'User Created'} Successfully`
+                        : 'An error occurred. Please try again.',
+                    severity: response?.id ? 'success' : 'error',
+                })
+            );
+            if (response?.id) handleClose();
         } catch (error) {
-            console.error('Error during user create/edit:', error);
+            console.error('Error during user creation/update:', error);
+            dispatch(showSnackbar({ message: 'An error occurred. Please try again.', severity: 'error' }));
         }
     };
+
+
 
     return (
         <Modal open={open} onClose={handleClose}>
